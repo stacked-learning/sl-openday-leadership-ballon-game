@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="560" height="150" viewBox="0 0 560 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Stacked Learning logo">
+  <defs>
+    <linearGradient id="sl-slab" x1="0%" x2="100%" y1="50%" y2="50%">
+      <stop offset="0%" stop-color="#4EC5C0"/>
+      <stop offset="100%" stop-color="#39A5A8"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(10 10)">
+    <path d="M0 10 L170 0 L170 22 L0 32 Z" fill="url(#sl-slab)"/>
+    <path d="M0 42 L158 32 L158 54 L0 64 Z" fill="url(#sl-slab)"/>
+    <path d="M0 74 L138 64 L138 86 L0 96 Z" fill="url(#sl-slab)"/>
+    <path d="M0 106 L122 96 L122 118 L0 128 Z" fill="url(#sl-slab)"/>
+    <g fill="#0F1A2A" font-family="Inter, 'Segoe UI', Arial, sans-serif" font-weight="700">
+      <text font-size="32" x="200" y="60">STACKED LEARNING</text>
+    </g>
+    <text font-family="Inter, 'Segoe UI', Arial, sans-serif" font-size="20" fill="#48B7B7" x="200" y="105">
+      Continually Building Knowledge
+    </text>
+  </g>
+</svg>
