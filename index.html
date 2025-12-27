@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
   <title>Balloon Anchor Playground</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
@@ -13,7 +16,7 @@
       margin: 0;
       min-height: 100vh;
       height: 100vh;
-      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-family: "Barlow", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
       background: radial-gradient(circle at top, #f8fbff 0%, #e8edf5 55%, #dee3ee 100%);
       color: #2a2f3e;
       display: flex;
@@ -65,6 +68,16 @@
     .balloon {
       --fill: #ff9aa2;
       --balloon-scale: 1;
+      --fx1: 0px;
+      --fy1: 0px;
+      --fx2: 0px;
+      --fy2: 0px;
+      --fx3: 0px;
+      --fy3: 0px;
+      --ax1: 0px;
+      --ay1: 0px;
+      --ax2: 0px;
+      --ay2: 0px;
       position: absolute;
       width: calc(var(--balloon-width, 125px) * var(--balloon-scale));
       height: calc(var(--balloon-height, 130px) * var(--balloon-scale));
@@ -89,10 +102,9 @@
       user-select: none;
       touch-action: none;
       transition: left 0.25s ease, top 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease;
-      animation: float var(--float-duration, 6s) ease-in-out infinite;
-      animation-delay: var(--float-delay, 0s);
-      animation-play-state: running;
+      animation: none;
       overflow: visible;
+      isolation: isolate;
     }
 
     .balloon::before {
@@ -130,15 +142,23 @@
       box-shadow: 0 20px 34px rgba(24, 32, 51, 0.35);
     }
 
+    .balloon.allowed {
+      filter: brightness(0.9);
+    }
+
     .balloon.anchored {
       position: relative;
       width: calc(var(--balloon-width, 125px) * var(--balloon-scale) * 0.82);
       height: calc(var(--balloon-height, 130px) * var(--balloon-scale) * 0.82);
       border-radius: var(--balloon-radius, 48% 52% 55% 45% / 40% 42% 58% 60%);
-      cursor: default;
-      pointer-events: none;
+      cursor: pointer;
+      pointer-events: auto;
+      animation: anchoredFloat 10s ease-in-out infinite;
+      animation-play-state: running;
+    }
+
+    .balloon.anchored.anchoring {
       animation: none;
-      animation-play-state: paused;
     }
 
     .balloon.anchored::before {
@@ -153,8 +173,16 @@
     }
 
     .balloon-label {
-      position: relative;
-      z-index: 1;
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem;
+      z-index: 2;
+      pointer-events: none;
+      text-align: center;
+      white-space: normal;
     }
 
     .anchor-area {
@@ -526,15 +554,15 @@
       overflow: hidden;
     }
 
-    @keyframes float {
+    @keyframes anchoredFloat {
       0% {
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0) scale(0.98);
       }
       50% {
-        transform: translate3d(4px, -14px, 0);
+        transform: translate3d(var(--ax1), var(--ay1), 0) scale(1);
       }
       100% {
-        transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0) scale(0.98);
       }
     }
 
@@ -646,28 +674,28 @@
       - Edit `maxAnchored` to adjust the total number of balloons that can anchor.
     */
     const balloonConfig = [
-      { label: "Global mindset and cultural intelligence", keyword: "Global mindset and cultural intelligence", color: "#ff8f87" },
-      { label: "Strategic vision and foresight", keyword: "Strategic vision and foresight", color: "#ffa654" },
-      { label: "Resilience and adaptability", keyword: "Resilience and adaptability", color: "#ffd35d" },
-      { label: "Empathic and authentic communication", keyword: "Empathic and authentic communication", color: "#4ecdc4" },
-      { label: "Emotional intelligence (EQ)", keyword: "Emotional intelligence (EQ)", color: "#6fb8ff" },
-      { label: "Integrity and ethical leadership", keyword: "Integrity and ethical leadership", color: "#c29bff" },
-      { label: "Accountability", keyword: "Accountability", color: "#ff9fb6" },
-      { label: "Decisiveness", keyword: "Decisiveness", color: "#ffb284" },
-      { label: "Creativity", keyword: "Creativity", color: "#ffc75f" },
-      { label: "Charismatic", keyword: "Charismatic", color: "#fbc687" },
-      { label: "Learning agility", keyword: "Learning agility", color: "#7dd8c2" },
-      { label: "Humility", keyword: "Humility", color: "#9dd4ff" },
-      { label: "Coaching mindset", keyword: "Coaching mindset", color: "#f58ad0" },
-      { label: "Conflict navigation", keyword: "Conflict navigation", color: "#f9a1bc" },
-      { label: "Stakeholder awareness", keyword: "Stakeholder awareness", color: "#ffb07f" },
-      { label: "Operational discipline", keyword: "Operational discipline", color: "#ff9d76" },
-      { label: "Risk awareness", keyword: "Risk awareness", color: "#f08a5d" },
-      { label: "Resourcefulness", keyword: "Resourcefulness", color: "#ffbb91" },
-      { label: "Influence without authority", keyword: "Influence without authority", color: "#72d6c9" },
-      { label: "Collaboration mindset", keyword: "Collaboration mindset", color: "#8fd3fe" },
-      { label: "Measured confidence", keyword: "Measured confidence", color: "#c6a4ff" },
-      { label: "Practical judgement", keyword: "Practical judgement", color: "#f1a17b" }
+      { label: "Global mindset and cultural intelligence", keyword: "Global mindset and cultural intelligence", color: "#ff6f61" },
+      { label: "Strategic vision and foresight", keyword: "Strategic vision and foresight", color: "#faae2b" },
+      { label: "Resilience and adaptability", keyword: "Resilience and adaptability", color: "#ffd166" },
+      { label: "Empathic and authentic communication", keyword: "Empathic and authentic communication", color: "#20c997" },
+      { label: "Emotional intelligence (EQ)", keyword: "Emotional intelligence (EQ)", color: "#4ea8de" },
+      { label: "Integrity and ethical leadership", keyword: "Integrity and ethical leadership", color: "#9775fa" },
+      { label: "Accountability", keyword: "Accountability", color: "#ff5d8f" },
+      { label: "Decisiveness", keyword: "Decisiveness", color: "#ff922b" },
+      { label: "Creativity", keyword: "Creativity", color: "#f9c74f" },
+      { label: "Charismatic", keyword: "Charismatic", color: "#f9844a" },
+      { label: "Learning agility", keyword: "Learning agility", color: "#1dd3b0" },
+      { label: "Humility", keyword: "Humility", color: "#74c69d" },
+      { label: "Coaching mindset", keyword: "Coaching mindset", color: "#ef476f" },
+      { label: "Conflict navigation", keyword: "Conflict navigation", color: "#f28482" },
+      { label: "Stakeholder awareness", keyword: "Stakeholder awareness", color: "#ff7f51" },
+      { label: "Operational discipline", keyword: "Operational discipline", color: "#90be6d" },
+      { label: "Risk awareness", keyword: "Risk awareness", color: "#f3722c" },
+      { label: "Resourcefulness", keyword: "Resourcefulness", color: "#ffb4a2" },
+      { label: "Influence without authority", keyword: "Influence without authority", color: "#4dd4c6" },
+      { label: "Collaboration mindset", keyword: "Collaboration mindset", color: "#4895ef" },
+      { label: "Measured confidence", keyword: "Measured confidence", color: "#b5838d" },
+      { label: "Practical judgement", keyword: "Practical judgement", color: "#ff9e5c" }
     ];
     const allowedKeywords = [
       "Global mindset and cultural intelligence",
@@ -722,6 +750,7 @@
       }
     ];
     const maxAnchored = 6;
+    const totalBalloons = balloonConfig.length;
 
     const balloonField = document.getElementById("balloonField");
     const anchorZone = document.getElementById("anchorZone");
@@ -756,6 +785,7 @@
     let zIndexSeed = 80;
     let hasCelebrated = false;
     let currentSlide = 0;
+    let carouselItems = leadershipTraits;
     const colorLookup = balloonConfig.reduce((acc, item) => {
       if (!acc[item.keyword]) {
         acc[item.keyword] = item.color;
@@ -771,6 +801,8 @@
         }
         return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
       });
+    const floaters = new Map();
+    const randomBetween = (min, max) => min + Math.random() * (max - min);
 
     const updateAnchorStatus = () => {
       anchorCountEl.textContent = anchoredBalloons.length;
@@ -801,50 +833,90 @@
 
     const randomizePosition = (el) => {
       const rect = balloonField.getBoundingClientRect();
-      const padX = Math.max(rect.width * 0.05, 24);
-      const padY = Math.max(rect.height * 0.05, 24);
+      const index = initialPlacements.length;
+      const cols = Math.max(3, Math.ceil(Math.sqrt(totalBalloons)));
+      const rows = Math.ceil(totalBalloons / cols);
+      const cellW = rect.width / cols;
+      const cellH = rect.height / rows;
 
-      const maxX = Math.max(rect.width - padX * 2 - el.offsetWidth, 0);
-      const maxY = Math.max(rect.height - padY * 2 - el.offsetHeight, 0);
+      const col = index % cols;
+      const row = Math.floor(index / cols);
 
-      let attempts = 0;
-      let placed = false;
-      let chosenLeft = padX;
-      let chosenTop = padY;
+      const jitterX = randomBetween(-cellW * 0.3, cellW * 0.3);
+      const jitterY = randomBetween(-cellH * 0.3, cellH * 0.3);
 
-      while (attempts < 60 && !placed) {
-        const trialLeft = padX + (maxX ? Math.random() * maxX : 0);
-        const trialTop = padY + (maxY ? Math.random() * maxY : 0);
-        const candidate = {
-          left: trialLeft,
-          top: trialTop,
-          width: el.offsetWidth,
-          height: el.offsetHeight
-        };
+      let left =
+        col * cellW + (cellW - el.offsetWidth) / 2 + jitterX;
+      let top =
+        row * cellH + (cellH - el.offsetHeight) / 2 + jitterY;
 
-        if (!initialPlacements.some((pos) => rectanglesOverlap(pos, candidate))) {
-          placed = true;
-          chosenLeft = trialLeft;
-          chosenTop = trialTop;
-          initialPlacements.push(candidate);
+      left = clamp(left, 0, Math.max(rect.width - el.offsetWidth, 0));
+      top = clamp(top, 0, Math.max(rect.height - el.offsetHeight, 0));
+
+      const candidate = {
+        left,
+        top,
+        width: el.offsetWidth,
+        height: el.offsetHeight
+      };
+
+      initialPlacements.push(candidate);
+      el.style.left = `${candidate.left}px`;
+      el.style.top = `${candidate.top}px`;
+    };
+
+    const setupFloater = (el) => {
+      floaters.set(el, {
+        vx: randomBetween(-0.35, 0.35),
+        vy: randomBetween(-0.55, -0.15)
+      });
+    };
+
+    const updateFloaters = () => {
+      const rect = balloonField.getBoundingClientRect();
+      floaters.forEach((vel, el) => {
+        if (el.dataset.anchored === "true" || el.dataset.dragging === "true") return;
+
+        let left = parseFloat(el.style.left) || 0;
+        let top = parseFloat(el.style.top) || 0;
+
+        left += vel.vx;
+        top += vel.vy;
+
+        const maxLeft = Math.max(0, rect.width - el.offsetWidth);
+        const maxTop = Math.max(0, rect.height - el.offsetHeight);
+        let bounced = false;
+
+        if (left < 0) {
+          left = 0;
+          vel.vx = Math.abs(vel.vx);
+          bounced = true;
+        } else if (left > maxLeft) {
+          left = maxLeft;
+          vel.vx = -Math.abs(vel.vx);
+          bounced = true;
         }
 
-        attempts++;
-      }
+        if (top < 0) {
+          top = 0;
+          vel.vy = Math.abs(vel.vy);
+          bounced = true;
+        } else if (top > maxTop) {
+          top = maxTop;
+          vel.vy = -Math.abs(vel.vy);
+          bounced = true;
+        }
 
-      if (!placed) {
-        chosenLeft = padX + (maxX ? Math.random() * maxX : 0);
-        chosenTop = padY + (maxY ? Math.random() * maxY : 0);
-        initialPlacements.push({
-          left: chosenLeft,
-          top: chosenTop,
-          width: el.offsetWidth,
-          height: el.offsetHeight
-        });
-      }
+        if (Math.random() < 0.02 || bounced) {
+          vel.vx = clamp(vel.vx + randomBetween(-0.1, 0.1), -0.45, 0.45);
+          vel.vy = clamp(vel.vy + randomBetween(-0.1, 0.1), -0.65, 0.1);
+        }
 
-      el.style.left = `${chosenLeft}px`;
-      el.style.top = `${chosenTop}px`;
+        el.style.left = `${left}px`;
+        el.style.top = `${top}px`;
+      });
+
+      requestAnimationFrame(updateFloaters);
     };
 
     const isOverAnchorZone = (element) => {
@@ -861,13 +933,40 @@
 
     const anchorBalloon = (balloon) => {
       if (anchoredBalloons.includes(balloon)) return;
+      const startRect = balloon.getBoundingClientRect();
       anchoredBalloons.push(balloon);
       balloon.classList.add("anchored");
+      balloon.classList.add("anchoring");
       balloon.dataset.anchored = "true";
       balloon.style.left = "";
       balloon.style.top = "";
       balloon.style.zIndex = "";
       anchorSlot.appendChild(balloon);
+
+      const endRect = balloon.getBoundingClientRect();
+      const deltaX = startRect.left - endRect.left;
+      const deltaY = startRect.top - endRect.top;
+
+      balloon.style.transition = "none";
+      balloon.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+      // Force reflow
+      balloon.getBoundingClientRect();
+
+      requestAnimationFrame(() => {
+        balloon.style.transition = "transform 0.35s ease";
+        balloon.style.transform = "translate(0, 0)";
+      });
+
+      const clearAnimation = () => {
+        balloon.style.transition = "";
+        balloon.style.transform = "";
+        balloon.classList.remove("anchoring");
+        balloon.removeEventListener("transitionend", clearAnimation);
+      };
+      balloon.addEventListener("transitionend", clearAnimation);
+
+      balloon.addEventListener("click", () => openTraitDetail(balloon.dataset.keyword));
       updateAnchorStatus();
       checkCompletionState();
     };
@@ -879,6 +978,7 @@
       event.preventDefault();
       activeBalloon = balloon;
       pointerId = event.pointerId;
+      balloon.dataset.dragging = "true";
       fieldRect = balloonField.getBoundingClientRect();
       const anchorRect = anchorZone.getBoundingClientRect();
       const totalHeight = anchorRect.bottom - fieldRect.top;
@@ -953,13 +1053,20 @@
         balloon.style.zIndex = "";
       }
 
+      balloon.dataset.dragging = "false";
       activeBalloon = null;
       pointerId = null;
     };
 
-    const renderCarousel = () => {
+    const renderCarousel = (filterKeyword = null) => {
       carouselTrack.innerHTML = "";
-      leadershipTraits.forEach((trait) => {
+      carouselItems = filterKeyword
+        ? leadershipTraits.filter(
+            (trait) => trait.keyword.toLowerCase() === filterKeyword.toLowerCase()
+          )
+        : leadershipTraits;
+
+      carouselItems.forEach((trait) => {
         const slide = document.createElement("div");
         slide.className = "carousel-slide";
 
@@ -982,24 +1089,35 @@
         slide.appendChild(content);
         carouselTrack.appendChild(slide);
       });
+      const showNavigation = !filterKeyword && carouselItems.length > 1;
+      prevSlideButton.style.display = showNavigation ? "flex" : "none";
+      nextSlideButton.style.display = showNavigation ? "flex" : "none";
+      carouselPagination.style.display = filterKeyword ? "none" : "block";
+      currentSlide = 0;
       updateCarousel();
     };
 
     const updateCarousel = () => {
-      const total = leadershipTraits.length;
+      const total = carouselItems.length || 1;
       currentSlide = (currentSlide + total) % total;
       carouselTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
-      carouselPagination.textContent = `${currentSlide + 1} / ${total}`;
+      if (carouselPagination.style.display !== "none") {
+        carouselPagination.textContent = `${currentSlide + 1} / ${total}`;
+      }
     };
 
     const goToSlide = (index) => {
-      const total = leadershipTraits.length;
+      const total = carouselItems.length || 1;
       currentSlide = (index + total) % total;
       updateCarousel();
     };
 
     const nextSlide = () => goToSlide(currentSlide + 1);
     const prevSlide = () => goToSlide(currentSlide - 1);
+
+    const openTraitDetail = (keyword) => {
+      openCarouselModal(keyword);
+    };
 
     const showCompletionOverlay = () => {
       completionOverlay.classList.add("active");
@@ -1014,7 +1132,8 @@
       document.body.classList.remove("overlay-open");
     };
 
-    const openCarouselModal = () => {
+    const openCarouselModal = (filterKeyword = null) => {
+      renderCarousel(filterKeyword);
       carouselModal.classList.add("active");
       carouselModal.setAttribute("aria-hidden", "false");
       document.body.classList.add("modal-open");
@@ -1117,6 +1236,9 @@
       el.dataset.keyword = data.keyword;
       el.setAttribute("aria-label", `Balloon ${data.label}`);
       el.style.setProperty("--fill", data.color);
+      if (allowedKeywords.includes(data.keyword)) {
+        el.classList.add("allowed");
+      }
 
       const profile = balloonProfiles[Math.floor(Math.random() * balloonProfiles.length)];
       const randomWidth =
@@ -1124,19 +1246,41 @@
       const textBoost = Math.min(90, Math.max(0, data.label.length - 18) * 1.5);
       let finalWidth = Math.min(260, Math.max(randomWidth, 135 + textBoost));
       if (data.keyword === "Resourcefulness") {
-        finalWidth = Math.min(250, Math.max(finalWidth, 210));
+        finalWidth = Math.max(finalWidth, 250);
       }
       const heightFactor =
         profile.heightFactorRange[0] +
         Math.random() * (profile.heightFactorRange[1] - profile.heightFactorRange[0]);
-      const finalHeight = finalWidth * heightFactor;
+      let finalHeight = finalWidth * heightFactor;
+      if (data.keyword === "Resourcefulness") {
+        // Make Resourcefulness a wider, lower oval and slightly smaller overall
+        finalWidth = Math.max(finalWidth * 0.95, 225);
+        finalHeight = Math.min(finalHeight * 0.78, finalWidth * 0.78);
+        el.style.setProperty("--balloon-radius", "55% 45% 50% 50% / 60% 60% 45% 45%");
+      }
 
       el.style.setProperty("--balloon-width", `${finalWidth}px`);
       el.style.setProperty("--balloon-height", `${finalHeight}px`);
       el.style.setProperty("--balloon-radius", profile.radius);
 
-      const duration = (6 + Math.random() * 2).toFixed(2);
-      const delay = (Math.random() * 4).toFixed(2);
+      const duration = (10 + Math.random() * 4).toFixed(2);
+      const delay = (Math.random() * 2.5).toFixed(2);
+
+      const randomOffset = (max) => {
+        const magnitude = max * (0.5 + Math.random() * 0.5); // 50-100% of max
+        return `${(Math.random() < 0.5 ? -1 : 1) * magnitude.toFixed(1)}px`;
+      };
+
+      el.style.setProperty("--fx1", randomOffset(45));
+      el.style.setProperty("--fy1", randomOffset(55));
+      el.style.setProperty("--fx2", randomOffset(60));
+      el.style.setProperty("--fy2", randomOffset(70));
+      el.style.setProperty("--fx3", randomOffset(55));
+      el.style.setProperty("--fy3", randomOffset(60));
+
+      // Anchored drift (smaller magnitude)
+      el.style.setProperty("--ax1", randomOffset(18));
+      el.style.setProperty("--ay1", randomOffset(22));
       el.style.setProperty("--float-duration", `${duration}s`);
       el.style.setProperty("--float-delay", `${delay}s`);
 
@@ -1148,6 +1292,7 @@
 
       balloonField.appendChild(el);
       randomizePosition(el);
+      setupFloater(el);
       el.addEventListener("pointerdown", pointerDown);
     };
 
@@ -1156,6 +1301,7 @@
     updateAnchorStatus();
     renderCarousel();
     enableCarouselSwipe();
+    updateFloaters();
     showWelcomeOverlay();
 
     restartButton.addEventListener("click", handleRestart);
